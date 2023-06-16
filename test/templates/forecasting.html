@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forecasting Page</title>
+</head>
+<body>
+    <h1>Forecasting Page</h1>
+    <form method="POST" action="/forecasting">
+        <label for="num_years">Number of Years for Forecasting:</label>
+        <input type="number" id="num_years" name="num_years" min="1" required>
+        <button type="submit">Forecast</button>
+    </form>
+
+    {% if prediction_df %}
+        <h2>Forecasted Data</h2>
+        <table>
+            <tr>
+                <th>Year</th>
+                <th>Actual</th>
+                <th>Forecast</th>
+            </tr>
+            {% for _, row in prediction_df.iterrows() %}
+                <tr>
+                    <td>{{ row['Year'] }}</td>
+                    <td>{{ row['Actual'] }}</td>
+                    <td>{{ row['Forecast'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        
+    {% endif %}
+</body>
+</html>

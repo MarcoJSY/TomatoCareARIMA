@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Forecasting Results</title>
+</head>
+<body>
+    <h1>Forecasting Results</h1>
+    <p>Here are the forecasted results:</p>
+
+    <!-- Display the forecasted data here -->
+    {% if prediction_df %}
+    <table>
+        <tr>
+            <th>Year</th>
+            <th>TimePeriod</th>
+            <!-- <th>Actual</th> -->
+            <th>Forecast</th>
+        </tr>
+        {% for row in prediction_df %}
+            <tr>
+                <td>{{ row['Year'] }}</td>
+                <td>{{ row['TimePeriod'] }}</td>
+                <!-- <td>{{ row['Actual'] }}</td> -->
+                <td>{{ row['Forecast'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div id="plot"></div>
+    <script>
+        // Convert the Flask template variable to a JavaScript variable
+        var forecastData = JSON.parse('{{ prediction_df | tojson | safe }}');
+        // Extract the years and forecasts
+        var years = forecastData.map(function(row) {
+            return row.Year + '- Quarter' + row.TimePeriod;
+        });
+        var forecasts = forecastData.map(function(row) {
+            return row.Forecast;
+        });
+
+        // Create the trace for the forecasted data
+        var trace = {
+            x: years,
+            y: forecasts,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Forecast'
+        };
+
+        // Create the layout for the plot
+        var layout = {
+            title: 'Actual vs Forecasted Future Data',
+            xaxis: {
+                tickangle: -90
+            },
+            yaxis: {
+                title: 'Area Harvested'
+            }
+        };
+
+        // Create the data array
+        var data = [trace];
+
+        // Plot the data
+        Plotly.newPlot('plot', data, layout);
+    </script>
+
+    {% else %}
+    <p>No forecasted data available.</p>
+    {% endif %}
+</body>
+</html>
