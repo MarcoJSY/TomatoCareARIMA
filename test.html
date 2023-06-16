@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGASA Farm Weather Forecast</title>
+    <style>
+        .iframeContainer{
+            position: relative;
+            width: 1300px;
+            height: 500px;
+            overflow: hidden;
+        }    
+        .iframeContent{
+            position: absolute;
+            top: -140px;
+            left: -180px;
+            width: 1500px;
+            height: 2000px;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframeContainer">
+        <iframe src="https://bagong.pagasa.dost.gov.ph/agri-weather?fbclid=IwAR2bqmkvxj3rZGEOtqGIZ8d7oObz1n5ACdkTYuEzc4sobNFUD46VITNKwN8" scrolling="no" class="iframeContent" ></iframe>
+    </div>
+</body>
+</html>

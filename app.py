@@ -2,8 +2,7 @@ from flask import Flask, render_template, request, session, redirect, json
 import pickle
 import numpy as np
 import pyrebase
-import sys
-print(sys.version)
+
 # Load the model from the file
 with open('ARIMA_VP.pkl', 'rb') as f:
     model_vp = pickle.load(f)
@@ -31,61 +30,123 @@ auth = firebase.auth()
 
 app.secret_key='secret'
 
-# @app.route('/')
-# def default_route():
-#     return render_template('login.html')
-
 @app.route('/')
 def home_route():
     return render_template('index.html')
 
+@app.route('/forecasting')
+def what_if_analysis():
+    return render_template('forecasting.html')
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/',methods=['POST','GET'])
 def login():
-    if "user" in session:
-        return redirect('/index')
-
+    # if "user" in session:
+    #     print("Redirecting to /index")
+    #     return redirect('/index')
+        
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        print("Email:", email)
+        print("Password:", password)
         try:
             user = auth.sign_in_with_email_and_password(email, password)
             session['user'] = email
+            print("User session set:", session['user'])
             return redirect('/index')
         except:
-            return 'Failed to login'
+            error = 'Failed to login. Invalid email or password.' 
+            return render_template('login.html', error=error)
     return render_template('login.html')
-
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if "user" in session:
-        return redirect('/login')
-
-    if request.method == 'POST':
-        try:
-            email = request.form.get('email')
-            password = request.form.get('password')
-            user = auth.create_user_with_email_and_password(email, password)
-            auth.send_email_verification(user['idToken'])
-            session['user'] = email
-            return redirect('/login')
-        except Exception as e:
-            error = str(e)
-            return render_template('signup.html', error=error)
-    return render_template('signup.html')
-
-
-@app.route('/index')
-def index():
-    if "user" not in session:
-        return redirect('/login')
-    return render_template('index.html')
 
 @app.route('/logout')
 def logout():
     session.pop('user')
     return redirect('/login')
 
+# @app.route('/login')
+# def user_login():
+#     return render_template('login.html')
+
+@app.route('/index')
+def index():
+    print(session)
+    if "user" not in session:
+        return redirect('/login')
+    return render_template('index.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        try:
+            email = request.form.get('email')
+            password = request.form.get('password')
+            user = auth.create_user_with_email_and_password(email, password)
+            auth.send_email_verification(user['idToken'])
+            session['user'] = user
+            return redirect('/login')
+        except Exception as e:
+            error = str(e)
+            return render_template('signup.html', error=error)
+    return render_template('signup.html')
+
 if __name__ == '__main__':
     app.run(debug=True, host='localhost', port=5000)
+
+
+# @app.route('/')
+# def default_route():
+#     return render_template('login.html')
+
+# @app.route('/')
+# def home_route():
+#     return render_template('index.html')
+
+
+# @app.route('/', methods=['POST', 'GET'])
+# def login():
+#     if "user" in session:
+#         return redirect('/index')
+
+#     if request.method == 'POST':
+#         email = request.form.get('email')
+#         password = request.form.get('password')
+#         try:
+#             user = auth.sign_in_with_email_and_password(email, password)
+#             session['user'] = email
+#             return redirect('/index')
+#         except:
+#             return 'Failed to login'
+#     return render_template('login.html')
+
+
+# @app.route('/signup', methods=['GET', 'POST'])
+# def signup():
+#     if "user" in session:
+#         return redirect('/login')
+
+#     if request.method == 'POST':
+#         try:
+#             email = request.form.get('email')
+#             password = request.form.get('password')
+#             user = auth.create_user_with_email_and_password(email, password)
+#             auth.send_email_verification(user['idToken'])
+#             session['user'] = email
+#             return redirect('/login')
+#         except Exception as e:
+#             error = str(e)
+#             return render_template('signup.html', error=error)
+#     return render_template('signup.html')
+
+
+# @app.route('/index')
+# def index():
+#     if "user" not in session:
+#         return redirect('/login')
+#     return render_template('index.html')
+
+# @app.route('/logout')
+# def logout():
+#     session.pop('user')
+#     return redirect('/login')
+
